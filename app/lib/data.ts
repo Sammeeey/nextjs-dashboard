@@ -41,9 +41,9 @@ export async function fetchRevenue() {
 export async function fetchLatestInvoices() {
   try {
     const unpopulatedInvoices = await invoice.find().limit(5).sort('descending')
-    console.log('unpopulatedInvoices', unpopulatedInvoices)
+    // console.log('unpopulatedInvoices', unpopulatedInvoices)
     const invoiceCustomers = await Promise.all(unpopulatedInvoices.map(async invoice => await customer.findOne({ id: invoice.customer})))
-    console.log('invoiceCustomers', invoiceCustomers)
+    // console.log('invoiceCustomers', invoiceCustomers)
 
     const latestInvoices = unpopulatedInvoices.map((invoice, i) => ({
         amount: invoice.amount,
@@ -62,26 +62,10 @@ export async function fetchLatestInvoices() {
 
 export async function fetchCardData() {
   try {
-    // You can probably combine these into a single SQL query
-    // However, we are intentionally splitting them to demonstrate
-    // how to initialize multiple queries in parallel with JS.
-    const invoiceCountPromise = sql`SELECT COUNT(*) FROM invoices`;
-    const customerCountPromise = sql`SELECT COUNT(*) FROM customers`;
-    const invoiceStatusPromise = sql`SELECT
-         SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS "paid",
-         SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
-         FROM invoices`;
-
-    const data = await Promise.all([
-      invoiceCountPromise,
-      customerCountPromise,
-      invoiceStatusPromise,
-    ]);
-
-    const numberOfInvoices = Number(data[0].rows[0].count ?? '0');
-    const numberOfCustomers = Number(data[1].rows[0].count ?? '0');
-    const totalPaidInvoices = formatCurrency(data[2].rows[0].paid ?? '0');
-    const totalPendingInvoices = formatCurrency(data[2].rows[0].pending ?? '0');
+    const numberOfCustomers = await customer.find().countDocuments() ?? '0'
+    const numberOfInvoices = await invoice.find().countDocuments() ?? '0'
+    const totalPaidInvoices = await invoice.find({status: 'paid'}).countDocuments() ?? '0'
+    const totalPendingInvoices = await invoice.find({status: 'pending'}).countDocuments() ?? '0'
 
     return {
       numberOfCustomers,
