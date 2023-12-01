@@ -4,6 +4,10 @@ const { Schema } = mongoose;
 
 const customerSchema = new Schema(
     {
+        id: {
+            type: String,
+            required: true,
+        },
         name: {
             type: String,
             required: true,

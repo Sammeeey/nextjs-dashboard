@@ -8,7 +8,7 @@ const {
 } = require('../app/lib/placeholder-data.js');
 const bcrypt = require('bcrypt');
 const revenueModel = require("../app/models/revenue.js");
-const invoicesModel = require("../app/models/invoices.js");
+const invoiceModel = require("../app/models/invoice.js");
 const customerModel = require('../app/models/customer.js');
 
 
@@ -78,11 +78,11 @@ async function seedUsers() {
 async function seedInvoices() {
   try {
     // clear collection before seeding
-    const clearCollection = await invoicesModel.deleteMany({})
+    const clearCollection = await invoiceModel.deleteMany({})
     console.log(`removed ${clearCollection.deletedCount} invoices`)
     
     // Insert data into the "invoices" collection
-    const insertedInvoices = await invoicesModel.insertMany(invoices)
+    const insertedInvoices = await invoiceModel.insertMany(invoices)
 
     console.log(`Seeded ${insertedInvoices.length} invoices`);
 
@@ -98,7 +98,7 @@ async function seedInvoices() {
 async function seedCustomers() {
   try {
     // clear collection before seeding
-    const clearCollection = await invoicesModel.deleteMany({})
+    const clearCollection = await invoiceModel.deleteMany({})
     console.log(`removed ${clearCollection.deletedCount} customers`)
 
     // Insert data into the "customers" collection

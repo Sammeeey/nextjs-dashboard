@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 
 const invoicesSchema = new Schema(
     {
-        customer: {
+        customer_id: {
             type: String,
             required: true,
         },
