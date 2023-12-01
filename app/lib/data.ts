@@ -64,8 +64,26 @@ export async function fetchCardData() {
   try {
     const numberOfCustomers = await customer.find().countDocuments() ?? '0'
     const numberOfInvoices = await invoice.find().countDocuments() ?? '0'
-    const totalPaidInvoices = await invoice.find({status: 'paid'}).countDocuments() ?? '0'
-    const totalPendingInvoices = await invoice.find({status: 'pending'}).countDocuments() ?? '0'
+
+    // Calculate the sum of paid invoices
+    const invoiceSum = await invoice.aggregate([
+      {
+        $match: { status: 'paid' }
+      },
+      {
+        $group: {
+          _id: null,
+          totalPaidInvoices: { $sum: '$amount' }
+        }
+      }
+    ])
+    console.log('invoiceSum', invoiceSum)
+    const totalPaidInvoices = invoiceSum[0].totalPaidInvoices
+    console.log('totalPaidInvoices', totalPaidInvoices)
+
+    const pendingInvoices = await invoice.find({status: 'pending'})
+    const totalPendingInvoices = pendingInvoices.reduce((accumulator, currentInvoice) => accumulator + currentInvoice.amount, 0)
+    console.log('totalPendingInvoices', totalPendingInvoices)
 
     return {
       numberOfCustomers,
