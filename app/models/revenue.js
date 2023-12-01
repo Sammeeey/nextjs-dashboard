@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require('mongoose');
 // import Comment from "@/models/comment";
 
 const { Schema } = mongoose;
@@ -18,4 +18,4 @@ const revenueSchema = new Schema(
     {timestamps: true}
 );
 
-export default mongoose.models.Revenue || mongoose.model('Revenue', revenueSchema)
+module.exports = mongoose.models.Revenue || mongoose.model('Revenue', revenueSchema)
