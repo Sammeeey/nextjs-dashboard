@@ -9,8 +9,6 @@ import {
   Revenue,
 } from './definitions';
 import { formatCurrency } from './utils';
-import connect from "@/app/lib/db";
-import revenue from "@/app/models/revenue";
 
 export async function fetchRevenue() {
   // Add noStore() here prevent the response from being cached.
@@ -23,13 +21,11 @@ export async function fetchRevenue() {
     // console.log('Fetching revenue data...');
     // await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    await connect()
-    
-    const data = await revenue.find({})
+    const data = await sql<Revenue>`SELECT * FROM revenue`;
 
     // console.log('Data fetch completed after 3 seconds.');
 
-    return data;
+    return data.rows;
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch revenue data.');
