@@ -1,5 +1,4 @@
-require('dotenv').config()
-const mongoose = require('mongoose');
+const { db } = require('@vercel/postgres');
 const {
   invoices,
   customers,
@@ -7,33 +6,8 @@ const {
   users,
 } = require('../app/lib/placeholder-data.js');
 const bcrypt = require('bcrypt');
-const revenueModel = require("../app/models/revenue");
 
-main().catch(err => console.log(err));
-
-async function main() {
-    await mongoose.connect(process.env.MONGODB_URI);
-    // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
-  
-//   await seedUsers();
-//   await seedCustomers();
-//   await seedInvoices();
-    await seedRevenue();
-
-    mongoose.connection.close()
-}
-
-
-
-
-
-// TODO add feature to clear each collection before seeding in each seed function
-
-
-
-
-
-async function seedUsers() {
+async function seedUsers(client) {
   try {
     await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
     // Create the "users" table if it doesn't exist
@@ -72,7 +46,7 @@ async function seedUsers() {
   }
 }
 
-async function seedInvoices() {
+async function seedInvoices(client) {
   try {
     await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
@@ -112,7 +86,7 @@ async function seedInvoices() {
   }
 }
 
-async function seedCustomers() {
+async function seedCustomers(client) {
   try {
     await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
@@ -151,17 +125,33 @@ async function seedCustomers() {
   }
 }
 
-async function seedRevenue() {   
+async function seedRevenue(client) {
   try {
-    // clear collection before seeding
-    const clearCollection = await revenueModel.deleteMany({})
-    console.log(`removed ${clearCollection.deletedCount} revenue`)
+    // Create the "revenue" table if it doesn't exist
+    const createTable = await client.sql`
+      CREATE TABLE IF NOT EXISTS revenue (
+        month VARCHAR(4) NOT NULL UNIQUE,
+        revenue INT NOT NULL
+      );
+    `;
 
-    // Insert data into the "revenue" collection
-    const insertedRevenue = await revenueModel.insertMany(revenue)
+    console.log(`Created "revenue" table`);
+
+    // Insert data into the "revenue" table
+    const insertedRevenue = await Promise.all(
+      revenue.map(
+        (rev) => client.sql`
+        INSERT INTO revenue (month, revenue)
+        VALUES (${rev.month}, ${rev.revenue})
+        ON CONFLICT (month) DO NOTHING;
+      `,
+      ),
+    );
+
     console.log(`Seeded ${insertedRevenue.length} revenue`);
 
     return {
+      createTable,
       revenue: insertedRevenue,
     };
   } catch (error) {
@@ -169,3 +159,21 @@ async function seedRevenue() {
     throw error;
   }
 }
+
+async function main() {
+  const client = await db.connect();
+
+  await seedUsers(client);
+  await seedCustomers(client);
+  await seedInvoices(client);
+  await seedRevenue(client);
+
+  await client.end();
+}
+
+main().catch((err) => {
+  console.error(
+    'An error occurred while attempting to seed the database:',
+    err,
+  );
+});
