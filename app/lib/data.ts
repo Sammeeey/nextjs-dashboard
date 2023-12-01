@@ -11,6 +11,8 @@ import {
 import { formatCurrency } from './utils';
 import connect from "@/app/lib/db";
 import revenue from "@/app/models/revenue";
+import invoice from "@/app/models/invoice";
+import customer from "@/app/models/customer";
 
 export async function fetchRevenue() {
   // Add noStore() here prevent the response from being cached.
@@ -38,17 +40,19 @@ export async function fetchRevenue() {
 
 export async function fetchLatestInvoices() {
   try {
-    const data = await sql<LatestInvoiceRaw>`
-      SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
-      FROM invoices
-      JOIN customers ON invoices.customer_id = customers.id
-      ORDER BY invoices.date DESC
-      LIMIT 5`;
+    const unpopulatedInvoices = await invoice.find().limit(5).sort('descending')
+    console.log('unpopulatedInvoices', unpopulatedInvoices)
+    const invoiceCustomers = await Promise.all(unpopulatedInvoices.map(async invoice => await customer.findOne({ id: invoice.customer})))
+    console.log('invoiceCustomers', invoiceCustomers)
 
-    const latestInvoices = data.rows.map((invoice) => ({
-      ...invoice,
-      amount: formatCurrency(invoice.amount),
-    }));
+    const latestInvoices = unpopulatedInvoices.map((invoice, i) => ({
+        amount: invoice.amount,
+        name: invoiceCustomers[i].name,
+        image_url: invoiceCustomers[i].image_url,
+        email: invoiceCustomers[i].email,
+        id: invoice.id,
+    }))
+
     return latestInvoices;
   } catch (error) {
     console.error('Database Error:', error);
