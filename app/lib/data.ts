@@ -43,6 +43,12 @@ export async function fetchRevenue() {
 export async function fetchLatestInvoices() {
   noStore()
   try {
+        // Artificially delay a response for demo purposes.
+    // Don't do this in production :)
+
+    console.log('Fetching latest invoices data...');
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
     const unpopulatedInvoices = await invoice.find().limit(5).sort('descending')
     // console.log('unpopulatedInvoices', unpopulatedInvoices)
     const invoiceCustomers = await Promise.all(unpopulatedInvoices.map(async invoice => await customer.findOne({ id: invoice.customer})))
@@ -55,6 +61,8 @@ export async function fetchLatestInvoices() {
         email: invoiceCustomers[i].email,
         id: invoice.id,
     }))
+
+    console.log('Data fetch completed after 5 seconds.');
 
     return latestInvoices;
   } catch (error) {
