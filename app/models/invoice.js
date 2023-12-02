@@ -26,4 +26,6 @@ const invoicesSchema = new Schema(
     {timestamps: true}
 );
 
+invoicesSchema.index({'$**': 'text'})
+
 module.exports = mongoose.models.Invoices || mongoose.model('Invoices', invoicesSchema)
