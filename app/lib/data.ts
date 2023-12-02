@@ -74,6 +74,12 @@ export async function fetchLatestInvoices() {
 export async function fetchCardData() {
   noStore()
   try {
+    // Artificially delay a response for demo purposes.
+    // Don't do this in production :)
+
+    console.log('Fetching card data...');
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     const numberOfCustomers = await customer.find().countDocuments() ?? '0'
     const numberOfInvoices = await invoice.find().countDocuments() ?? '0'
 
@@ -96,6 +102,8 @@ export async function fetchCardData() {
     const pendingInvoices = await invoice.find({status: 'pending'})
     const totalPendingInvoices = pendingInvoices.reduce((accumulator, currentInvoice) => accumulator + currentInvoice.amount, 0)
     // console.log('totalPendingInvoices', totalPendingInvoices)
+
+    console.log('Data fetch completed after 2 seconds.');
 
     return {
       numberOfCustomers,
