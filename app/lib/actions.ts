@@ -34,4 +34,26 @@ export async function createInvoice(formData){
 
 export async function updateInvoice(formData) {
     console.log('updateInvoice action')
+    // console.log('formData', formData)
+
+    const invoiceId = formData.get('invoiceId')
+    const customerId = formData.get('customerId')
+    const amount = formData.get('amount')
+    const status = formData.get('status')
+
+    const amountInCents = amount * 100
+    // console.log('amountInCents', amountInCents)
+
+    const date = new Date().toISOString().split('T')[0];
+    // console.log('date', date)
+
+    await invoice.findByIdAndUpdate(invoiceId, {
+        customer_id: customerId,
+        amount: amountInCents,
+        status: status,
+        date
+    }).then(invoice => console.log(invoice))
+
+    revalidatePath(`/dashboard/invoices`)
+    redirect(`/dashboard/invoices`)
 }
