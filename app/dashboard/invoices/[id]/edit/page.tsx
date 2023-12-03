@@ -3,10 +3,11 @@ import { fetchCustomers, fetchInvoiceById } from '@/app/lib/data';
 import EditInvoiceForm from '@/app/ui/invoices/edit-form';
  
 export default async function Page({params}) {
-  const invoice = await fetchInvoiceById(params.id)
+  const [invoice, customers] = await Promise.all([
+    fetchInvoiceById(params.id),
+    fetchCustomers(),
+  ])
   const invoicePlain = JSON.parse(JSON.stringify(invoice))
-
-  const customers = await fetchCustomers({params})
   const customersArrPlain = customers.map(customer => JSON.parse(JSON.stringify(customer)))
  
   return (
