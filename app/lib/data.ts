@@ -175,15 +175,8 @@ export async function fetchInvoiceById(id: string) {
 export async function fetchCustomers() {
   noStore()
   try {
-    const data = await sql<CustomerField>`
-      SELECT
-        id,
-        name
-      FROM customers
-      ORDER BY name ASC
-    `;
+    const customers = await customer.find()
 
-    const customers = data.rows;
     return customers;
   } catch (err) {
     console.error('Database Error:', err);
