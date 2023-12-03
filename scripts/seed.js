@@ -98,7 +98,7 @@ async function seedInvoices() {
 async function seedCustomers() {
   try {
     // clear collection before seeding
-    const clearCollection = await invoiceModel.deleteMany({})
+    const clearCollection = await customerModel.deleteMany({})
     console.log(`removed ${clearCollection.deletedCount} customers`)
 
     // Insert data into the "customers" collection
