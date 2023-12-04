@@ -14,6 +14,7 @@ import revenue from "@/app/models/revenue";
 import invoice from "@/app/models/invoice";
 import customer from "@/app/models/customer";
 import { unstable_noStore as noStore } from 'next/cache';
+import mongoose from 'mongoose';
 
 await connect();
 
@@ -149,7 +150,18 @@ export async function fetchInvoicesPages(query: string) {
 export async function fetchInvoiceById(id: string) {
   noStore()
   try {
+    if(!mongoose.isValidObjectId(id)){
+      console.log('invalid invoice id')
+      return null
+    }
+
     const data = await invoice.findById(id)
+
+    if(!data) {
+      console.log('no data for invoice id')
+      return null
+    }
+
     const invoiceObj = {...data._doc, amount: data.amount/100}
 
     return invoiceObj
