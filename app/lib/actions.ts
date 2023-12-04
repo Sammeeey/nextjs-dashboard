@@ -5,27 +5,32 @@ import invoice from "../models/invoice";
 import { redirect } from "next/navigation";
 
 export async function createInvoice(formData){
-    // console.log('createInvoice action')
+    try {
+        // console.log('createInvoice action')
 
-    const rawFormData = {
-        customerId: formData.get('customerId'),
-        amount: formData.get('amount'),
-        status: formData.get('status'),
-    };
-    // console.log('rawFormData', rawFormData);
+        const rawFormData = {
+            customerId: formData.get('customerId'),
+            amount: formData.get('amount'),
+            status: formData.get('status'),
+        };
+        // console.log('rawFormData', rawFormData);
 
-    const amountInCents = rawFormData.amount * 100
-    // console.log('amountInCents', amountInCents)
+        const amountInCents = rawFormData.amount * 100
+        // console.log('amountInCents', amountInCents)
 
-    const date = new Date().toISOString().split('T')[0];
-    // console.log('date', date)
+        const date = new Date().toISOString().split('T')[0];
+        // console.log('date', date)
 
-    await invoice.create({
-        customer_id: rawFormData.customerId,
-        amount: amountInCents,
-        status: rawFormData.status,
-        date
-    }).then(invoice => console.log(invoice))
+        await invoice.create({
+            customer_id: rawFormData.customerId,
+            amount: amountInCents,
+            status: rawFormData.status,
+            date
+        }).then(invoice => console.log(invoice))
+    } catch (error) {
+        console.log(error)
+        return {message: 'error: failed to create invoice'}
+    }
 
     revalidatePath(`/dashboard/invoices`)
     redirect(`/dashboard/invoices`)
@@ -33,25 +38,30 @@ export async function createInvoice(formData){
 
 
 export async function updateInvoice(id, formData) {
-    console.log('updateInvoice action')
-    // console.log('formData', formData)
-
-    const customerId = formData.get('customerId')
-    const amount = formData.get('amount')
-    const status = formData.get('status')
-
-    const amountInCents = amount * 100
-    // console.log('amountInCents', amountInCents)
-
-    const date = new Date().toISOString().split('T')[0];
-    // console.log('date', date)
-
-    await invoice.findByIdAndUpdate(id, {
-        customer_id: customerId,
-        amount: amountInCents,
-        status: status,
-        date
-    }).then(invoice => console.log(invoice))
+    try {
+        console.log('updateInvoice action')
+        // console.log('formData', formData)
+    
+        const customerId = formData.get('customerId')
+        const amount = formData.get('amount')
+        const status = formData.get('status')
+    
+        const amountInCents = amount * 100
+        // console.log('amountInCents', amountInCents)
+    
+        const date = new Date().toISOString().split('T')[0];
+        // console.log('date', date)
+    
+        await invoice.findByIdAndUpdate(id, {
+            customer_id: customerId,
+            amount: amountInCents,
+            status: status,
+            date
+        }).then(invoice => console.log(invoice))
+    } catch (error) {
+        console.log(error)
+        return {message: 'error: failed to update invoice'}
+    }
 
     revalidatePath(`/dashboard/invoices`)
     redirect(`/dashboard/invoices`)
@@ -59,9 +69,16 @@ export async function updateInvoice(id, formData) {
 
 
 export async function deleteInvoice(id) {
-    console.log(`deleteInvoice action for id ${id}`)
+    try {
+        console.log(`deleteInvoice action for id ${id}`)
+    
+        await invoice.findByIdAndDelete(id)
 
-    await invoice.findByIdAndDelete(id)
+        revalidatePath(`/dashboard/invoices`)
+        return {message: 'invoice deleted'}
+    } catch (error) {
+        console.log(error)
+        return {message: 'error: failed to delete invoice'}
+    }
 
-    revalidatePath(`/dashboard/invoices`)
 }
