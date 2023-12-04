@@ -56,3 +56,12 @@ export async function updateInvoice(id, formData) {
     revalidatePath(`/dashboard/invoices`)
     redirect(`/dashboard/invoices`)
 }
+
+
+export async function deleteInvoice(id) {
+    console.log(`deleteInvoice action for id ${id}`)
+
+    await invoice.findByIdAndDelete(id)
+
+    revalidatePath(`/dashboard/invoices`)
+}
