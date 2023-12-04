@@ -51,7 +51,7 @@ export async function fetchLatestInvoices() {
 
     const unpopulatedInvoices = await invoice.find().limit(5).sort('descending')
     // console.log('unpopulatedInvoices', unpopulatedInvoices)
-    const invoiceCustomers = await Promise.all(unpopulatedInvoices.map(async invoice => await customer.findOne({ id: invoice.customer})))
+    const invoiceCustomers = await Promise.all(unpopulatedInvoices.map(async invoice => await customer.findOne({ id: invoice.customer_id})))
     // console.log('invoiceCustomers', invoiceCustomers)
 
     const latestInvoices = unpopulatedInvoices.map((invoice, i) => ({
