@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import invoice from "../models/invoice";
 import { redirect } from "next/navigation";
 
-export async function createInvoice(formData){
+export async function createInvoice(prevState, formData){
     try {
         // console.log('createInvoice action')
 
@@ -21,15 +21,24 @@ export async function createInvoice(formData){
         const date = new Date().toISOString().split('T')[0];
         // console.log('date', date)
 
-        await invoice.create({
-            customer_id: rawFormData.customerId,
-            amount: amountInCents,
-            status: rawFormData.status,
-            date
-        }).then(invoice => console.log(invoice))
+        try {
+            await invoice.create({
+                customer_id: rawFormData.customerId,
+                amount: amountInCents,
+                status: rawFormData.status,
+                date
+            }).then(invoice => console.log(invoice))
+        } catch (error) {
+            const errorMessages = {}
+            for (let [key, val] of Object.entries(error.errors)){
+                errorMessages[val.properties.path] = val.properties.message
+            }
+            const newState = {message: 'Missing fields. Failed to create invoice.', errors: errorMessages}
+            return newState
+        }
     } catch (error) {
         console.log(error)
-        return {message: 'error: failed to create invoice'}
+        return {message: 'Database Error: failed to create invoice'}
     }
 
     revalidatePath(`/dashboard/invoices`)

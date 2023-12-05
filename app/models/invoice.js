@@ -7,19 +7,19 @@ const invoicesSchema = new Schema(
     {
         customer_id: {
             type: String,
-            required: true,
+            required: [true, 'customer ID is required'],
         },
         amount: {
             type: Number,
-            required: true,
+            required: [true, 'amount is required'],
         },
         status: {
             type: String,
-            required: true,
+            required: [true, 'invoice status is required'],
         },
         date: {
             type: String,
-            required: true,
+            required: [true, 'invoice date is required'],
         },
         // comments: [{type: Schema.Types.ObjectId, ref: 'Comment'}],
     },
