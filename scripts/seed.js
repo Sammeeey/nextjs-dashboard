@@ -10,6 +10,7 @@ const bcrypt = require('bcrypt');
 const revenueModel = require("../app/models/revenue.js");
 const invoiceModel = require("../app/models/invoice.js");
 const customerModel = require('../app/models/customer.js');
+const userModel = require('../app/models/user.js');
 
 
 main().catch(err => console.log(err));
@@ -18,7 +19,7 @@ async function main() {
     await mongoose.connect(process.env.MONGODB_URI);
     // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
   
-    // await seedUsers();
+    await seedUsers();
     await seedCustomers();
     await seedInvoices();
     await seedRevenue();
@@ -38,35 +39,22 @@ async function main() {
 
 async function seedUsers() {
   try {
-    await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-    // Create the "users" table if it doesn't exist
-    const createTable = await client.sql`
-      CREATE TABLE IF NOT EXISTS users (
-        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        email TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL
-      );
-    `;
+    // clear collection before seeding
+    const clearCollection = await userModel.deleteMany({})
+    console.log(`removed ${clearCollection.deletedCount} users`)
 
-    console.log(`Created "users" table`);
-
-    // Insert data into the "users" table
-    const insertedUsers = await Promise.all(
-      users.map(async (user) => {
-        const hashedPassword = await bcrypt.hash(user.password, 10);
-        return client.sql`
-        INSERT INTO users (id, name, email, password)
-        VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
-        ON CONFLICT (id) DO NOTHING;
-      `;
-      }),
-    );
+    // prepare user object with hashed password
+    const insertUsers = await Promise.all(users.map(async user => ({
+      name: user.name,
+      email: user.email,
+      password: await bcrypt.hash(user.password, 10)
+    })))
+    
+    const insertedUsers = await userModel.insertMany(insertUsers)
 
     console.log(`Seeded ${insertedUsers.length} users`);
 
     return {
-      createTable,
       users: insertedUsers,
     };
   } catch (error) {
