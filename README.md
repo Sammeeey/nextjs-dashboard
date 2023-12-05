@@ -26,9 +26,10 @@
   - revenue
 
 ## todo
-- [ ] [seed db](https://nextjs.org/learn/dashboard-app/setting-up-your-database#seed-your-database)
-- [ ] [update db queries for mongodb](https://nextjs.org/learn/dashboard-app/fetching-data#using-sql)
-- [ ] connect mongodb
+- [x] [seed db](https://nextjs.org/learn/dashboard-app/setting-up-your-database#seed-your-database)
+- [x] [update db queries for mongodb](https://nextjs.org/learn/dashboard-app/fetching-data#using-sql)
+- [x] connect mongodb
+- [ ] ([add form validation for invoice edit page](https://nextjs.org/learn/dashboard-app/improving-accessibility#practice-adding-aria-labels))
 
 ## questions
 - [ ] (how does importing and working with fonts in nextjs work? (can I import any font?))
