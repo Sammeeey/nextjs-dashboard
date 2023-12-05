@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-// import Comment from "@/models/comment";
 
 const { Schema } = mongoose;
 
@@ -7,17 +6,23 @@ const userSchema = new Schema(
     {
         name: {
             type: String,
-            required: true,
+            required: [true, 'name is required'],
         },
         email: {
             type: String,
             required: true,
+            unique: true,
+            validate: {
+              validator: function (value) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+              },
+              message: 'Invalid email address format',
+            },
         },
-        password: {
+        password: { // this is the hashed password
             type: String,
-            required: true,
+            required: [true, 'password is required'],
         },
-        // comments: [{type: Schema.Types.ObjectId, ref: 'Comment'}],
     },
     {timestamps: true}
 );
