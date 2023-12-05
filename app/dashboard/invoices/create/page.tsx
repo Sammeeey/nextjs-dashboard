@@ -4,6 +4,7 @@ import { fetchCustomers } from '@/app/lib/data';
  
 export default async function Page() {
   const customers = await fetchCustomers();
+  const customersPlain = JSON.parse(JSON.stringify(customers))
  
   return (
     <main>
@@ -17,7 +18,7 @@ export default async function Page() {
           },
         ]}
       />
-      <Form customers={customers} />
+      <Form customers={customersPlain} />
     </main>
   );
 }
