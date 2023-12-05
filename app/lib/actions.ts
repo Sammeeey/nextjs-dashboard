@@ -15,7 +15,7 @@ export async function createInvoice(prevState, formData){
         };
         // console.log('rawFormData', rawFormData);
 
-        const amountInCents = rawFormData.amount * 100
+        const amountInCents = rawFormData.amount === '' ? -1 : rawFormData.amount * 100
         // console.log('amountInCents', amountInCents)
 
         const date = new Date().toISOString().split('T')[0];
