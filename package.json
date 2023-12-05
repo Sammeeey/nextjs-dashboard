@@ -6,7 +6,8 @@
     "prettier": "prettier --write --ignore-unknown .",
     "prettier:check": "prettier --check --ignore-unknown .",
     "start": "next start",
-    "seed": "ts-node --project tsconfig.seeder.json ./scripts/seed.js"
+    "seed": "ts-node --project tsconfig.seeder.json ./scripts/seed.js",
+    "lint": "next lint"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.18",
