@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import invoice from "../models/invoice";
 import { redirect } from "next/navigation";
+import { AuthError } from "next-auth";
+import { signIn } from "@/auth";
 
 export async function createInvoice(prevState, formData){
     try {
@@ -90,4 +92,21 @@ export async function deleteInvoice(id) {
         return {message: 'error: failed to delete invoice'}
     }
 
+}
+
+
+export async function authenticate(prevState, formData) {
+    try {
+        await signIn('credentials', formData)
+    } catch (error) {
+        if (error instanceof AuthError) {
+            switch (error.type) {
+                case 'CredentialsSignin':
+                    return 'Invalid Credentials.';        
+                default:
+                    return 'Something went wrong.';
+            }
+        }
+        throw error;
+    }
 }
