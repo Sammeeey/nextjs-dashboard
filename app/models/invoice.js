@@ -12,6 +12,7 @@ const invoicesSchema = new Schema(
         amount: {
             type: Number,
             required: [true, 'amount is required'],
+            min: [0, 'amount must be greater than $0'],
         },
         status: {
             type: String,
