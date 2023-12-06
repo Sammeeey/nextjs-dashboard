@@ -2,7 +2,10 @@ import '@/app/ui/global.css'
 import { inter } from '@/app/ui/fonts'
 
 export const metadata = {
-  title: 'Acme Dashboard',
+  title: {
+    template: '%s | Acme Dashboard',
+    default: 'Acme Dashboard',
+  },
   description: 'The official Next.js Course Dashboard, build with App Router.',
   metadataBase: new URL('https://next-learn-dashboard.vercel.sh'),
 };

@@ -6,7 +6,11 @@ import { lusitana } from '@/app/ui/fonts';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 import { Suspense } from 'react';
 import { fetchInvoicesPages } from '@/app/lib/data';
- 
+
+export const metadata = {
+  title: 'Invoices',
+};
+
 export default async function Page({searchParams}) {
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
