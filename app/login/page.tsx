@@ -1,5 +1,9 @@
 import AcmeLogo from '@/app/ui/acme-logo';
 import LoginForm from '@/app/ui/login-form';
+
+export const metadata = {
+  title: 'Login'
+}
  
 export default function LoginPage() {
   return (
